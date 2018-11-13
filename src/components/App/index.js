@@ -1,52 +1,31 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import ConnectionForm from "../ConnectionForm";
 
-const ipcRenderer  = window.ipcRenderer;
-
-class App extends Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      isConnected: false,
-      databaseCount: 0
-    };
-
-    this.onRedisConnected = this.onRedisConnected.bind(this);
-    this.onRedisConnectError = this.onRedisConnectError.bind(this);
-    this.onRedisDatabaseCount = this.onRedisDatabaseCount.bind(this);
-
-    ipcRenderer.on("redis-connected", this.onRedisConnected);
-    ipcRenderer.on("redis-connect-error", this.onRedisConnectError);
-    ipcRenderer.on("redis-database-count", this.onRedisDatabaseCount);
-  }
-
-  doConnectRedis() {
-    ipcRenderer.send("redis-connect", { a: 1, b: 2 });
-  }
-
-  onRedisConnected() {
-    console.log("redis-connected");
-  }
-
-  onRedisDatabaseCount(_, count) {
-    this.setState({ databaseCount: count });
-  }
-
-  onRedisConnectError() {
-
+      isConnected: false
+    }
   }
 
   render() {
-    return (
-      <div className="App">
-        <div>
-          <a onClick={ this.doConnectRedis }>Connect</a>
-          { this.state.databaseCount }
+    if (this.state.isConnected) {
+      return (
+        <div id="app-container" className="container">
+
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div id="app-container" className="container">
+          <div className="row">
+            <ConnectionForm />
+          </div>
+        </div>
+      );
+    }
   }
 }
 
