@@ -1,13 +1,15 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import Form from "../Form";
 import FormControl from "../FormControl";
-import { RedisContext } from "../App/context";
 
 import "./index.sass";
 
 class ConnectionForm extends React.Component {
-  static contextType = RedisContext;
+  static propTypes = {
+    makeConnection: PropTypes.func
+  };
 
   state = {
     defaults: {
@@ -18,7 +20,7 @@ class ConnectionForm extends React.Component {
 
   render() {
     return (
-      <Form className="col-xs-12 col-lg-4" id="connection-form" defaults={ this.state.defaults } onSubmit={ this.context.makeConnection }>
+      <Form className="col-xs-12 col-lg-4" id="connection-form" defaults={ this.state.defaults } onSubmit={ this.props.makeConnection }>
         <FormControl label="Host" name="host" type="text" />
         <FormControl label="Port" name="port" type="number" />
         <hr />
