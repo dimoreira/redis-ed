@@ -12,6 +12,7 @@ class App extends React.Component {
     this.redisInstance = null;
     this.state = {
       currentDatabase: 0,
+      currentKey: null,
       connectError: false,
       isConnected: false,
     };
@@ -45,8 +46,15 @@ class App extends React.Component {
     if (this.state.isConnected) {
       return (
         <div id="app-container" className="container">
-          <DatabaseSelector send={ this.redisInstance.send } onChangeDatabase={ (id) => this.setState({ currentDatabase: id }) } />
-          <KeyTree send={ this.redisInstance.send } currentDatabase={ this.state.currentDatabase } />
+          <DatabaseSelector
+            send={ this.redisInstance.send }
+            onChangeDatabase={ (id) => this.setState({ currentDatabase: id, currentKey: null }) }
+          />
+          <KeyTree
+            send={ this.redisInstance.send }
+            currentDatabase={ this.state.currentDatabase }
+            onSelectKey={ (key) => this.setState({ currentKey: key }) }
+          />
         </div>
       );
     } else {

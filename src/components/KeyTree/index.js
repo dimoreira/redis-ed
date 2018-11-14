@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 
 class KeyTree extends React.Component {
   static propTypes = {
+    currentDatabase: PropTypes.integer,
     send: PropTypes.func,
-    currentDatabase: PropTypes.integer
+    onSelectKey: PropTypes.func
   };
 
   state = {
@@ -39,23 +40,26 @@ class KeyTree extends React.Component {
 
   keysToTree() {
     let tree = {};
-    let lastTree = null;
+    let lastTree, lastKey;
 
     const subKeyToTree = (subkey) => {
       if (!lastTree[subkey]) {
         lastTree[subkey] = {
-          fullKey: (lastTree.fullKey || "") + subkey + ":",
+          fullKey: `${ lastKey }${subkey}`,
           key: subkey,
           children: {}
         }
       }
 
+      lastKey += `${ subkey }:`;
       lastTree = lastTree[subkey].children;
     };
 
     const keyToTree = (key) => {
       lastTree = tree;
-      key.split(":").forEach((subkey) => subKeyToTree(subkey));
+      lastKey = "";
+
+      key.split(":").forEach(subKeyToTree);
     };
 
     this.state.keys.forEach(keyToTree);
@@ -74,28 +78,44 @@ class KeyTree extends React.Component {
     }
   }
 
-  toggleExpand(key) {
-    let newExpansions = { ...this.state.expanded };
+  handleClick(key, childrenLength) {
+    if (childrenLength > 0) {
+      let newExpansions = { ...this.state.expanded };
 
-    if (newExpansions[key]) {
-      delete newExpansions[key];
+      if (newExpansions[key]) {
+        delete newExpansions[key];
+      } else {
+        newExpansions[key] = true;
+      }
+
+      this.setState({ expanded: newExpansions });
     } else {
-      newExpansions[key] = true;
+      if (this.props.onSelectKey) {
+        this.props.onSelectKey(key);
+      }
     }
-
-    this.setState({ expanded: newExpansions });
   }
 
   renderTree(children, margin = 0) {
     return Object.keys(children).map((key) => {
       const current = children[key];
+      const childrenLength = Object.keys(current.children).length;
+      const keyName = `${ current.key } ${ childrenLength > 0 ? `(${ childrenLength })` : ""}`;
+
+      let childrenContainer = null;
+
+      if (this.state.expanded[current.fullKey]) {
+        childrenContainer = (
+          <div>
+            { this.renderTree(current.children, margin + 10) }
+          </div>
+        );
+      }
 
       return (
         <div key={ `tree.${ current.fullKey }` } style={{ marginLeft: `${ margin }px` }}>
-          <div onClick={ () => this.toggleExpand(current.fullKey) }>{ current.key } ({ Object.keys(current.children).length })</div>
-          <div style={{ display: this.state.expanded[current.fullKey] ? "block" : "none" }}>
-            { this.renderTree(current.children, margin + 10) }
-          </div>
+          <div onClick={ () => this.handleClick(current.fullKey, childrenLength) }>{ keyName }</div>
+          { childrenContainer }
         </div>
       )
     });
