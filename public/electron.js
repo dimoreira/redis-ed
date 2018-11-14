@@ -1,8 +1,9 @@
-const { app, BrowserWindow, shell, ipcMain, Menu, TouchBar, protocol } = require("electron");
-const { TouchBarButton, TouchBarLabel, TouchBarSpacer } = TouchBar;
+const { app, BrowserWindow, Menu, protocol } = require("electron");
 
 const path = require("path");
 const isDev = require("electron-is-dev");
+const Ipc = require("./ipc");
+const TouchBar = require("./touch-bar");
 
 let mainWindow;
 
@@ -52,10 +53,6 @@ const createWindow = () => {
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
-
-    ipcMain.on("open-external-window", (event, arg) => {
-      shell.openExternal(arg);
-    });
   });
 };
 
@@ -121,6 +118,8 @@ const generateMenu = () => {
   ];
 
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  Ipc.register(mainWindow);
+  TouchBar.register(mainWindow);
 };
 
 app.on("ready", () => {
@@ -151,8 +150,4 @@ app.on("activate", () => {
   if (mainWindow === null) {
     createWindow();
   }
-});
-
-ipcMain.on("load-page", (event, arg) => {
-  mainWindow.loadURL(arg);
 });
