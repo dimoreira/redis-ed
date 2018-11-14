@@ -1,5 +1,7 @@
 import React from 'react';
 import ConnectionForm from "../ConnectionForm";
+import DatabaseSelector from "../DatabaseSelector";
+import KeyTree from "../KeyTree";
 
 import { Redis } from "./redis";
 
@@ -9,10 +11,9 @@ class App extends React.Component {
 
     this.redisInstance = null;
     this.state = {
+      currentDatabase: 0,
       connectError: false,
       isConnected: false,
-      databases: 0,
-      info: null
     };
   }
 
@@ -35,7 +36,7 @@ class App extends React.Component {
       if (err) {
         this.setSstate({ connectError: true });
       } else {
-        this.setState({ isConnected: true, info: result });
+        this.setState({ isConnected: true });
       }
     });
   }
@@ -44,7 +45,8 @@ class App extends React.Component {
     if (this.state.isConnected) {
       return (
         <div id="app-container" className="container">
-
+          <DatabaseSelector send={ this.redisInstance.send } onChangeDatabase={ (id) => this.setState({ currentDatabase: id }) } />
+          <KeyTree send={ this.redisInstance.send } currentDatabase={ this.state.currentDatabase } />
         </div>
       );
     } else {
