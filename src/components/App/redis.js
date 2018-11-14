@@ -5,6 +5,8 @@ class RedisInstance {
     this.uuid = uuid;
     this.callbackQueue = [];
 
+    this.send = this.send.bind(this);
+
     window.ipcRenderer.on("redis-command", (event, message) => {
       if (message.uuid !== this.uuid) {
         return;
@@ -30,7 +32,7 @@ class RedisInstance {
     });
 
     window.ipcRenderer.send("redis-command", {
-      args: args.length === 2 ? args[1] : [],
+      args: args.length === 2 ? args[0] : [],
       command: command,
       uuid: this.uuid,
       queue: callbackUuid
