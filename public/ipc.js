@@ -35,6 +35,7 @@ module.exports = {
           console.log(`MAIN - Command executed ${ message.command } (${ message.queue })`);
 
           event.sender.send("redis-command", {
+            uuid: message.uuid,
             command: message.command,
             error: error,
             queue: message.queue,

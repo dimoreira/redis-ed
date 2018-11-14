@@ -2,7 +2,7 @@ import React from 'react';
 import ConnectionForm from "../ConnectionForm";
 
 import { RedisContext } from "./context";
-import { Commands } from "./commands";
+import { Redis } from "./redis";
 
 class App extends React.Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class App extends React.Component {
     this.redisContextDefaults = {
       makeConnection: (formData) => {
         this.setState({ connectError: false });
-        this.redisInstance = Commands.createClient({
+        this.redisInstance = Redis.createClient({
           host: formData.host,
           port: formData.port
         });
