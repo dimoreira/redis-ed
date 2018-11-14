@@ -1,0 +1,3 @@
+body, html, #root, #app-container, #app-container > .row {
+  height: 100%;
+}
