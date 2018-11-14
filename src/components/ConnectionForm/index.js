@@ -1,19 +1,30 @@
 import React from "react";
-import { FormGroup, InputGroup } from "@blueprintjs/core";
+
+import Form from "../Form";
+import FormControl from "../FormControl";
+import { RedisContext } from "../App/context";
+
+import "./index.sass";
 
 class ConnectionForm extends React.Component {
+  static contextType = RedisContext;
+
+  state = {
+    defaults: {
+      host: "127.0.0.1",
+      port: 6379
+    }
+  };
+
   render() {
     return (
-      <div className="col-xs-12 col-lg-4 col-lg-offset-4">
-        <FormGroup
-            helperText="Helper text with details..."
-            label="Label A"
-            labelFor="text-input"
-            labelInfo="(required)"
-        >
-            <InputGroup id="text-input" placeholder="Placeholder text" />
-        </FormGroup>
-      </div>
+      <Form className="col-xs-12 col-lg-4" id="connection-form" defaults={ this.state.defaults } onSubmit={ this.context.makeConnection }>
+        <FormControl label="Host" name="host" type="text" />
+        <FormControl label="Port" name="port" type="number" />
+        <hr />
+        <FormControl label="Authentication" helpText="Leave blank if none" name="authentication" type="text" />
+        <input type="submit" value="Connect" />
+      </Form>
     );
   }
 }

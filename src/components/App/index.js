@@ -1,29 +1,64 @@
 import React from 'react';
 import ConnectionForm from "../ConnectionForm";
 
+import { RedisContext } from "./context";
+import { Commands } from "./commands";
+
 class App extends React.Component {
   constructor(props) {
     super(props);
 
+    this.redisInstance = null;
     this.state = {
-      isConnected: false
-    }
+      connectError: false,
+      isConnected: false,
+      databases: 0,
+      info: null
+    };
+
+    this.redisContextDefaults = {
+      makeConnection: (formData) => {
+        this.setState({ connectError: false });
+        this.redisInstance = Commands.createClient({
+          host: formData.host,
+          port: formData.port
+        });
+
+        if (formData.authentication && formData.authentication.length) {
+          this.redisInstance.auth(formData.authentication, (err) => {
+            if (err) {
+              this.setState({ connectError: true });
+            }
+          });
+        }
+
+        this.redisInstance.send('info', (err, result) => {
+          if (err) {
+            this.setSstate({ connectError: true });
+          } else {
+            this.setState({ isConnected: true, info: result });
+          }
+        });
+      }
+    };
   }
 
   render() {
     if (this.state.isConnected) {
       return (
-        <div id="app-container" className="container">
+        <RedisContext.Provider value={{ ...this.state, ...this.redisContextDefaults }}>
+          <div id="app-container" className="container">
 
-        </div>
+          </div>
+        </RedisContext.Provider>
       );
     } else {
       return (
-        <div id="app-container" className="container">
-          <div className="row">
+        <RedisContext.Provider value={{ ...this.state, ...this.redisContextDefaults }}>
+          <div id="app-container" className="container">
             <ConnectionForm />
           </div>
-        </div>
+        </RedisContext.Provider>
       );
     }
   }
