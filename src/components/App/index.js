@@ -2,6 +2,7 @@ import React from 'react';
 import ConnectionForm from "../ConnectionForm";
 import DatabaseSelector from "../DatabaseSelector";
 import KeyTree from "../KeyTree";
+import KeyViewer from "../KeyViewer";
 
 import { Redis } from "./redis";
 
@@ -55,6 +56,7 @@ class App extends React.Component {
             currentDatabase={ this.state.currentDatabase }
             onSelectKey={ (key) => this.setState({ currentKey: key }) }
           />
+          <KeyViewer send={ this.redisInstance.send } currentKey={ this.state.currentKey } />
         </div>
       );
     } else {
